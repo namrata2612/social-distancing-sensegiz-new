@@ -7,13 +7,14 @@ import { ApiService } from './api.service';
   providedIn: 'root'
 })
 export class GeneralMethodsService {
+  networkStatus:boolean
   myDate:any
   toDate:any
   dataBackUp:any=[]
   constructor(private toastctrl:ToastController,private network: Network,private api:ApiService) {
-    this.locationAutorize()
     let connectSubscription = this.network.onConnect().subscribe(() => {
       console.log('network connected!');
+      this.networkStatus=true
       if(this.dataBackUp.length>0){
         for(var i=0 ; i<this.dataBackUp.length ; i++){
           this.api.SendData(this.dataBackUp[i]).then((apis:any)=>{
@@ -24,6 +25,12 @@ export class GeneralMethodsService {
           })
         }
       }
+    });
+
+    let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
+      console.log('network disconnected!');
+
+      this.networkStatus=false
     });
   }
 
@@ -66,18 +73,6 @@ export class GeneralMethodsService {
 
 
 
-  locationAutorize(){
-    // this.diagnostic.isLocationAuthorized().then((res:any)=>{
-    //   console.log("res location authorize",res);
-    //
-    //   if(res == 'GRANTED'){
-    //
-    //   }
-    //   else{
-    //
-    //   }
-    // })
-  }
 
 
 }

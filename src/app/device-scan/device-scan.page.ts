@@ -178,7 +178,7 @@ async connectDevice(){
       if(this.devices[i].hasOwnProperty('name')){
         console.log("came connect 4",this.devices[i].name);
 
-        if((this.devices[i].name.toString().indexOf("FinDR")>-1) && !(this.devices[i].name.toString().indexOf("FinDR00")>-1)){
+        if((this.devices[i].name.toString().indexOf("FInDR")>-1) && !(this.devices[i].name.toString().indexOf("FInDR00")>-1)){
           console.log("came connect 5",this.devices[i]);
 
           await this.connectBleDevice(this.devices[i]).then((res:any)=>{
@@ -186,7 +186,7 @@ async connectDevice(){
           })
         }
 
-        else if((this.devices[i].name.toString().indexOf("FiNDr")>-1) && !(this.devices[i].name.toString().indexOf("FiNDr00")>-1)){
+        else if((this.devices[i].name.toString().indexOf("FINDr")>-1) && !(this.devices[i].name.toString().indexOf("FINDr00")>-1)){
           console.log("came connect 6",this.devices[i]);
 
           await this.connectBleDeviceWriteTime(this.devices[i]).then((res:any)=>{
@@ -225,9 +225,9 @@ async connectDevice(){
 
        var hexDataAdvertising = this.buf2hex(resId.advertising).toUpperCase()
        console.log("hexDataAdvertising===",hexDataAdvertising)
-       var split = hexDataAdvertising.split('0408')
+       var split = hexDataAdvertising.split('0308')
        console.log("split===",split)
-       var findIdAdvertisement = this.hex2dec(split[1].substring(0,4))
+       var findIdAdvertisement = this.hex2dec(split[1].substring(0,2))
        console.log("findIdAdvertisement===",findIdAdvertisement)
 
        var data = {
@@ -245,24 +245,24 @@ async connectDevice(){
              this.changeDetectorRef.detectChanges();
                var inc = 0
                if(res.characteristics.length>0){
-                 if(res.characteristics[16].service == 'fff0' && res.characteristics[16].characteristic=='fff4'){
-                   console.log("char up if",res.characteristics[16]);
+                 if(res.characteristics[17].service == 'fff0' && res.characteristics[17].characteristic=='fff4'){
+                   console.log("char up if",res.characteristics[17]);
 
                    var value = this.str2abb('A0')
                    this.write(resId.id,res,'A000').then(resWrite=>{
                      console.log("start")
-                     this.ble.startNotification(resId.id,res.characteristics[16].service,res.characteristics[16].characteristic).subscribe((data:any)=>{
+                     this.ble.startNotification(resId.id,res.characteristics[17].service,res.characteristics[17].characteristic).subscribe((data:any)=>{
                        var hexData = this.buf2hex(data).toUpperCase()
                        console.log("started notified",hexData)
 
-                       if(hexData == "0000000000000000"){
+                       if(hexData == "00000000000000"){
                          var value = this.str2abb(this.general.timeBle())
                          this.ble.writeWithoutResponse(resId.id,res.characteristics[14].service,res.characteristics[14].characteristic,value).then((resdata:any)=>{
                            console.log("written time on data 000",resdata)
                          })
                        }
 
-                       else if(hexData == "0011111111000000"){
+                       else if(hexData == "00111111110000"){
                          var dataRssi = {
                            userId : this.loginData.userId
                          }
@@ -286,7 +286,7 @@ async connectDevice(){
                          })
                        }
 
-                       else if(hexData == '0022222222000000'){
+                       else if(hexData == '00222222220000'){
                          var dataOnOff = {
                            deviceId : findIdAdvertisement,
                            userId : this.loginData.userId
@@ -322,7 +322,7 @@ async connectDevice(){
                          })
                        }
 
-                       else if(hexData == "0033333333000000"){
+                       else if(hexData == "00333333330000"){
                          var dataTxPower = {
                            userId : this.loginData.userId
                          }
@@ -330,7 +330,7 @@ async connectDevice(){
                            console.log("reson====",reson)
                            if(reson.status){
                              if(reson.success[0].txPowerHex != null){
-                               var valueData = '0' + '45' + reson.success[0].txPowerHex //00 for 9999 and 0 for 255
+                               var valueData = '00' + '45' + reson.success[0].txPowerHex //00 for 9999 and 0 for 255
                                console.log("valueData===",valueData)
                                var value = this.str2abb(valueData)
                                this.ble.writeWithoutResponse(resId.id,res.characteristics[14].service,res.characteristics[14].characteristic,value).then((resdata:any)=>{
@@ -431,7 +431,7 @@ async connectDevice(){
                            console.log("err==",err)
                          })
                        }
-                       else if(hexData == "0044444444000000"){
+                       else if(hexData == "00444444440000"){
                          var dataBuffer = {
                            userId : this.loginData.userId
                          }
@@ -471,8 +471,8 @@ async connectDevice(){
                            console.log("err==",err)
                          })
                        }
-                       else if(hexData == "0077777777000000"){
-                         this.ble.stopNotification(resId.id,res.characteristics[16].service,res.characteristics[16].characteristic).then(stopNot=>{
+                       else if(hexData == "00777777770000"){
+                         this.ble.stopNotification(resId.id,res.characteristics[17].service,res.characteristics[17].characteristic).then(stopNot=>{
                            this.disconnect(resId.id).then((disres:any)=>{
                              resolve(true)
                            }).catch(err=>{
@@ -554,9 +554,9 @@ async connectDevice(){
        console.log("resId====",resId)
        var hexDataAdvertising = this.buf2hex(resId.advertising).toUpperCase()
        console.log("hexDataAdvertising1===",hexDataAdvertising)
-       var split = hexDataAdvertising.split('0408')
+       var split = hexDataAdvertising.split('0308')
        console.log("split1===",split)
-       var findIdAdvertisement = this.hex2dec(split[1].substring(0,4))
+       var findIdAdvertisement = this.hex2dec(split[1].substring(0,2))
        console.log("findIdAdvertisement1===",findIdAdvertisement)
 
 
@@ -583,13 +583,13 @@ async connectDevice(){
 
                  this.ble.writeWithoutResponse(resId.id,res.characteristics[14].service,res.characteristics[14].characteristic,value).then((resdata:any)=>{
                    console.log("written time",resdata)
-                   if(res.characteristics[16].service == 'fff0' && res.characteristics[16].characteristic=='fff4'){
-                     this.ble.startNotification(resId.id,res.characteristics[16].service,res.characteristics[16].characteristic).subscribe((data:any)=>{
+                   if(res.characteristics[17].service == 'fff0' && res.characteristics[17].characteristic=='fff4'){
+                     this.ble.startNotification(resId.id,res.characteristics[17].service,res.characteristics[17].characteristic).subscribe((data:any)=>{
                        var hexData = this.buf2hex(data).toUpperCase()
                        console.log("started notified time",hexData)
-                       if(hexData == "0011111111000000"){
+                       if(hexData == "00111111110000"){
                          console.log("end notify time");
-                         this.ble.stopNotification(resId.id,res.characteristics[16].service,res.characteristics[16].characteristic).then(stopNot=>{
+                         this.ble.stopNotification(resId.id,res.characteristics[17].service,res.characteristics[17].characteristic).then(stopNot=>{
                            this.disconnect(resId.id).then((disres:any)=>{
                              resolve(true)
                            }).catch(err=>{
