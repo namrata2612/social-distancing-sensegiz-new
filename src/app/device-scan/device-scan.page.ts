@@ -21,7 +21,7 @@ toDate:any
 dataFull:any
 loginData:any
 connectStatus:any
-scanStatus:any='kjrjeg'
+scanStatus:any='Starting'
 stopStatus:boolean=false
 
   constructor(private ble:BLE,
